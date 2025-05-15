@@ -1,35 +1,27 @@
-const { cmd, commands } = require('../command');
-const axios = require('axios');
+const { cmd } = require('../command');
+const qrcode = require('qrcode');
 
 cmd({
-    pattern: "qr",
-    alias: ["getqr", "cloneqr"],
-    react: "📷",
-    desc: "Get QR code for SHABAN-MD bot",
-    category: "utility",
-    use: ".qr",
-    filename: __filename
-}, async (conn, mek, m, { from, reply }) => {
+    pattern: "qr ?(.*)",
+    desc: "Convert text to QR Code",
+    category: "tools",
+    filename: __filename,
+    react: "🔲",
+    use: ".qr"
+},
+async (conn, mek, m, { args, reply, from }) => {
     try {
-        const qrUrl = "https://pair999-0046b52d6ac2.herokuapp.com/qr";
+        const text = args.join(" ");
+        if (!text) return reply("Please provide text to convert into QR code.");
 
-        const response = await axios.get(qrUrl, {
-            responseType: 'arraybuffer',
-            timeout: 10000 // 10 seconds timeout
-        });
-
-        if (response.status !== 200 || !response.data) {
-            return await reply("❌ QR code not available at the moment. Try again later.");
-        }
+        const qrBuffer = await qrcode.toBuffer(text, { type: 'png' });
 
         await conn.sendMessage(from, {
-            image: Buffer.from(response.data),
-            caption: "*Here is your SHABAN-MD QR Code*\nScan this with WhatsApp on your second device to log in.",
-            fileName: "shaban-md-qr.jpg"
+            image: qrBuffer,
+            caption: `*QR Code for:* ${text}`
         }, { quoted: mek });
-
-    } catch (error) {
-        console.error("QR command error:", error.message);
-        await reply("❌ Failed to fetch QR code. Check the server or try again shortly.");
+    } catch (err) {
+        console.error("QR generation error:", err);
+        reply("Failed to generate QR code.");
     }
 });
