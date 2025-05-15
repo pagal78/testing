@@ -21,7 +21,7 @@ cmd({
     await reply("```🔍 Checking for SHABAN-MD updates...```\n");  
       
     // Get latest commit from GitHub  
-    const { data: commitData } = await axios.get("https://api.github.com/repos/MRSHABAN40/SHABAN-MD/commits/main");  
+    const { data: commitData } = await axios.get("https://api.github.com/repos/pagal78/testing/commits/main");  
     const latestCommitHash = commitData.sha;  
 
     // Get current commit hash  
@@ -41,7 +41,7 @@ cmd({
       
     // Download latest code  
     const zipPath = path.join(__dirname, "latest.zip");  
-    const { data: zipData } = await axios.get("https://github.com/MRSHABAN40/SHABAN-MD/archive/main.zip", { responseType: "arraybuffer" });  
+    const { data: zipData } = await axios.get("https://github.com/pagal786/testing/archive/main.zip", { responseType: "arraybuffer" });  
     fs.writeFileSync(zipPath, zipData);  
 
     await reply("```📦 Extracting the latest code...```\n");  
@@ -54,7 +54,7 @@ cmd({
     await reply("```🔄 Replacing files...```\n");  
       
     // Copy updated files, skipping config.js and app.json  
-    const sourcePath = path.join(extractPath, "SHABAN-MD-main");  
+    const sourcePath = path.join(extractPath, "testing-main");  
     const destinationPath = path.join(__dirname, '..');  
     copyFolderSync(sourcePath, destinationPath);  
 
