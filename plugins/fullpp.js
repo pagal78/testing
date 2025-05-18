@@ -21,17 +21,14 @@ async (conn, mek, m) => {
         const media = await conn.downloadMediaMessage(quoted);
         const image = await Jimp.read(media);
 
-        const size = 640; // WhatsApp DP resolution
-        const bg = image.clone().cover(size, size).blur(10);  // blurred background
-        const fg = image.clone().contain(size, size);         // original image in center
+        const size = 640; // Required size
+        image.cover(size, size); // Crop to fit (without borders or blur)
 
-        bg.composite(fg, 0, 0); // Merge foreground over background
-
-        const buffer = await bg.getBufferAsync(Jimp.MIME_JPEG);
+        const buffer = await image.getBufferAsync(Jimp.MIME_JPEG);
 
         await conn.updateProfilePicture(conn.user.id, buffer);
 
-        m.reply('✅ *Bot ki profile picture full DP format mein set kar di gayi!*');
+        m.reply('✅ *Bot ki profile picture full image ke sath set kar di gayi!*');
     } catch (err) {
         console.error(err);
         m.reply(`❌ *Error:* ${err.message}`);
