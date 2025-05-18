@@ -1,5 +1,6 @@
+const config = require('../config'); 
 const { cmd } = require('../command'); 
-const { getBuffer } = require('../lib/functions3'); 
+const { getBuffer } = require('../lib/functions'); 
 const Jimp = require('jimp'); 
 
 cmd({ 
