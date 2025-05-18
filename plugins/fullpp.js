@@ -1,39 +1,28 @@
-const { cmd } = require('../command');
-const Jimp = require('jimp');
+const config = require('../config'); 
+const { cmd } = require('../command'); 
+const { getBuffer } = require('../lib/functions'); 
+const Jimp = require('jimp'); 
 
-cmd({
-  pattern: "fullpp",
-  react: "🖼️",
-  desc: "Set full image as bot's profile picture (no crop)",
-  category: "tools",
-  filename: __filename
-}, async (conn, mek, m) => {
-  try {
-    const isQuotedImage = m.quoted && (m.quoted.type === 'imageMessage' || (m.quoted.type === 'viewOnceMessage' && m.quoted.msg.type === 'imageMessage'));
-    if (!isQuotedImage) {
-      return m.reply('⚠️ *Reply kisi image par karein...*');
-    }
-
-    m.reply('⏳ *Setting full-size profile picture...*');
-
-    const imgBuffer = await m.quoted.download();
-    const img = await Jimp.read(imgBuffer);
-    const width = img.bitmap.width;
-    const height = img.bitmap.height;
-
-    const size = Math.max(width, height); // square base
-    const bg = new Jimp(size, size, 0x000000FF); // black background
-
-    const x = (size - width) / 2;
-    const y = (size - height) / 2;
-    bg.composite(img, x, y); // center the original image
-
-    const finalBuffer = await bg.getBufferAsync(Jimp.MIME_JPEG);
-    await conn.updateProfilePicture(conn.user.id, finalBuffer);
-
-    m.reply('✅ *Full image DP successfully set!*');
-  } catch (err) {
-    console.error(err);
-    m.reply(`❌ *Error:* ${err.message}`);
-  }
+cmd({ 
+  pattern: "fullpp", 
+  react: "🖼️", 
+  desc: "Set full image as bot's profile picture", 
+  category: "tools", 
+  filename: __filename 
+}, async (conn, mek, m) => { 
+  try { 
+    const isQuotedImage = m.quoted && (m.quoted.type === 'imageMessage' || (m.quoted.type === 'viewOnceMessage' && m.quoted.msg.type === 'imageMessage')); 
+    if (!isQuotedImage) { 
+      return m.reply('⚠️ *please reply to an img or mention any photo..*'); 
+    } 
+    m.reply('⏳ *dark-silence-md updating your profile, please wait...*'); 
+    const imageBuffer = await m.quoted.download(); 
+    const image = await Jimp.read(imageBuffer); 
+    const buffer = await image.getBufferAsync(Jimp.MIME_JPEG); 
+    await conn.updateProfilePicture(conn.user.id, buffer); 
+    m.reply('✅ *your profile successfully upgraded wia dark-silence-md!*'); 
+  } catch (err) { 
+    console.error(err); 
+    m.reply(`❌ *Error:* ${err.message}`); 
+  } 
 });
